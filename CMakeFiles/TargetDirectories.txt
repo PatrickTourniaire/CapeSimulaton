@@ -1,0 +1,3 @@
+/Users/patricktourniaire/Public/Polytechnique/inf585-computer_animation/CapeSimulaton/CMakeFiles/CapeSimulaton.dir
+/Users/patricktourniaire/Public/Polytechnique/inf585-computer_animation/CapeSimulaton/CMakeFiles/edit_cache.dir
+/Users/patricktourniaire/Public/Polytechnique/inf585-computer_animation/CapeSimulaton/CMakeFiles/rebuild_cache.dir

@@ -104,8 +104,8 @@ void effect_transition_compute(effect_transition_structure& effect_transition, c
 	for (int k = 0; k < joint_source_anim_local.size(); k++) {
 		mat4 M_src = joint_source_anim_local[k];
 		mat4 M_dst = joint_destination_anim_local[k];
-
-		affine_rt a_src = affine_rt::from_matrix(M_src);
+	
+    affine_rt a_src = affine_rt::from_matrix(M_src);
 		affine_rt a_dst = affine_rt::from_matrix(M_dst);
 		
 		rotation_transform r_src = a_src.rotation;

@@ -29,7 +29,10 @@ void scene_structure::initialize()
 
 	for(auto& entry : characters)
 		entry.second.timer.start();
-	
+  
+  // Load the texture for the cape
+	cloth_texture.load_and_initialize_texture_2d_on_gpu(project::path + "assets/cloth.jpg");
+	initialize_cloth(gui.N_sample_edge);
 }
 
 void scene_structure::display_frame()
@@ -89,6 +92,51 @@ void scene_structure::display_frame()
 		}
 	}
 
+  // UPDATE POSITION CONSTRAINT FOR CAPE
+  character_structure ch = characters[current_active_character];
+  
+  /*
+   * Joint of index 11 name: mixamorig_LeftShoulder
+   * Joint of index 12 name: mixamorig_RightShoulder
+  */
+  cgp::numarray<mat4> joint_frames = ch.animated_model.skeleton.joint_matrix_global;
+  constraint.fixed_sample.clear();
+  constraint.add_fixed_position(0, 0, joint_frames[12].get_block_translation());
+  constraint.add_fixed_position(0, gui.N_sample_edge - 1, joint_frames[11].get_block_translation());
+  
+	// Simulation of the cloth
+	// ***************************************** //
+	int const N_step = 1; // Adapt here the number of intermediate simulation steps (ex. 5 intermediate steps per frame)
+	for (int k_step = 0; k_step < N_step; ++k_step)
+	{
+		// Update the forces on each particle
+		simulation_compute_force(cloth, parameters);
+
+		// One step of numerical integration
+		simulation_numerical_integration(cloth, parameters, parameters.dt);
+
+		// Apply the positional (and velocity) constraints
+		simulation_apply_constraints(cloth, constraint);
+
+		// Check if the simulation has not diverged - otherwise stop it
+		bool const simulation_diverged = simulation_detect_divergence(cloth);
+		if (simulation_diverged) {
+			std::cout << "\n *** Simulation has diverged ***" << std::endl;
+			std::cout << " > The simulation is stoped" << std::endl;
+		}
+	}
+
+
+	// Cloth display
+	// ***************************************** //
+
+	// Prepare to display the updated cloth
+	cloth.update_normal();        // compute the new normals
+	cloth_drawable.update(cloth); // update the positions on the GPU
+
+	// Display the cloth
+	draw(cloth_drawable, environment);
+
 	// ************************************** //
 	// Display the surface and the skeletons
 	// ************************************** //
@@ -122,7 +170,9 @@ void scene_structure::display_frame()
 			character.sk_drawable.display_segments = gui.display_skeleton_bone;
 			draw(character.sk_drawable, environment);
 		}
-
+    
+    // Draw cloth
+    draw(cloth_drawable, environment);
 	}
 
 }
@@ -245,6 +295,19 @@ void scene_structure::keyboard_event()
 void scene_structure::idle_frame()
 {
 	camera_control.idle_frame(environment.camera_view);
+}
+
+// Compute a new cloth in its initial position (can be called multiple times)
+void scene_structure::initialize_cloth(int N_sample)
+{
+	cloth.initialize(N_sample);
+	cloth_drawable.initialize(N_sample);
+	cloth_drawable.drawable.texture = cloth_texture;
+	cloth_drawable.drawable.material.texture_settings.two_sided = true;
+
+	constraint.fixed_sample.clear();
+  //constraint.add_fixed_position(0, 0, cloth);
+  //constraint.add_fixed_position(0, N_sample - 1, cloth);
 }
 
 void initialize_ground(mesh_drawable& ground) {

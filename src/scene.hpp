@@ -6,7 +6,9 @@
 
 #include "animated_character/animated_character.hpp"
 #include "effects/effects.hpp"
-
+#include "cloth/cloth.hpp"
+#include "constraint/constraint.hpp"
+#include "simulation/simulation.hpp"
 
 using cgp::mesh_drawable;
 
@@ -22,17 +24,18 @@ struct gui_parameters {
 	bool display_skeleton_joint_frame = false;
 	bool display_skeleton_bone = true;
 	bool rotate_head_effect_active = false;
+	int N_sample_edge = 20;
 };
-
-
-
-
 
 
 
 // The structure of the custom scene
 struct scene_structure : cgp::scene_inputs_generic {
 	
+  cloth_structure cloth;                     // The values of the position, velocity, forces, etc, stored as a 2D grid
+	cloth_structure_drawable cloth_drawable;   // Helper structure to display the cloth as a mesh
+  constraint_structure constraint;
+
 	// ****************************** //
 	// Elements and shapes of the scene
 	// ****************************** //
@@ -60,6 +63,10 @@ struct scene_structure : cgp::scene_inputs_generic {
 	mesh_drawable sphere_ik;
 	mesh_drawable ground;
 
+  // Cape shapes and texture
+	simulation_parameters parameters;          // Stores the parameters of the simulation (stiffness, mass, damping, time step, etc)
+  cgp::opengl_texture_image_structure cloth_texture;
+
 	// ****************************** //
 	// Functions
 	// ****************************** //
@@ -74,6 +81,7 @@ struct scene_structure : cgp::scene_inputs_generic {
 	void keyboard_event();
 	void idle_frame();
 
+  void initialize_cloth(int N_sample); // Recompute the cloth from scratch
 };
 
 

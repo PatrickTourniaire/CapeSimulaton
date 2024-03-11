@@ -7,12 +7,12 @@ set(CMAKE_DEPENDS_GENERATOR "Unix Makefiles")
 # The top level Makefile was generated from the following files:
 set(CMAKE_MAKEFILE_DEPENDS
   "CMakeCache.txt"
-  "/Users/patricktourniaire/Public/Polytechnique/inf585-computer_animation/Project/CMakeLists.txt"
+  "/Users/patricktourniaire/Public/Polytechnique/inf585-computer_animation/CapeSimulaton/CMakeLists.txt"
   "CMakeFiles/3.27.5/CMakeCCompiler.cmake"
   "CMakeFiles/3.27.5/CMakeCXXCompiler.cmake"
   "CMakeFiles/3.27.5/CMakeSystem.cmake"
-  "/Users/patricktourniaire/Public/Polytechnique/inf585-computer_animation/Project/cgp/library/CMakeLists.txt"
-  "/Users/patricktourniaire/Public/Polytechnique/inf585-computer_animation/Project/cgp/library/third_party/CMakeLists.txt"
+  "/Users/patricktourniaire/Public/Polytechnique/inf585-computer_animation/CapeSimulaton/cgp/library/CMakeLists.txt"
+  "/Users/patricktourniaire/Public/Polytechnique/inf585-computer_animation/CapeSimulaton/cgp/library/third_party/CMakeLists.txt"
   "/usr/local/Cellar/cmake/3.27.5/share/cmake/Modules/CMakeCCompiler.cmake.in"
   "/usr/local/Cellar/cmake/3.27.5/share/cmake/Modules/CMakeCCompilerABI.c"
   "/usr/local/Cellar/cmake/3.27.5/share/cmake/Modules/CMakeCInformation.cmake"
@@ -135,5 +135,5 @@ set(CMAKE_MAKEFILE_PRODUCTS
 
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
-  "CMakeFiles/Project.dir/DependInfo.cmake"
+  "CMakeFiles/CapeSimulaton.dir/DependInfo.cmake"
   )
