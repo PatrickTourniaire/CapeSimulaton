@@ -101,9 +101,13 @@ void scene_structure::display_frame()
   */
   cgp::numarray<mat4> joint_frames = ch.animated_model.skeleton.joint_matrix_global;
   constraint.fixed_sample.clear();
-  constraint.add_fixed_position(0, 0, joint_frames[12].get_block_translation());
-  constraint.add_fixed_position(0, gui.N_sample_edge - 1, joint_frames[11].get_block_translation());
+  constraint.add_fixed_position(0, 0, joint_frames[17].get_block_translation());
+  constraint.add_fixed_position(0, gui.N_sample_edge - 1, joint_frames[16].get_block_translation());
   
+  for (int i = 0; i < ch.animated_model.skeleton.joint_name.size(); i++) {
+    std::cout << "Joint at index (" << i << ") with name: " << ch.animated_model.skeleton.joint_name[i] << std::endl;
+  }
+
 	// Simulation of the cloth
 	// ***************************************** //
 	int const N_step = 1; // Adapt here the number of intermediate simulation steps (ex. 5 intermediate steps per frame)

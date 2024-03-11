@@ -28359,10 +28359,15 @@ CMakeFiles/CapeSimulaton.dir/src/main.cpp.o
  /Users/patricktourniaire/Public/Polytechnique/inf585-computer_animation/CapeSimulaton/src/animated_character/skeleton_structure/skeleton_structure.hpp
  /Users/patricktourniaire/Public/Polytechnique/inf585-computer_animation/CapeSimulaton/src/environment.hpp
  /Users/patricktourniaire/Public/Polytechnique/inf585-computer_animation/CapeSimulaton/src/cloth/cloth.hpp
+ /Users/patricktourniaire/Public/Polytechnique/inf585-computer_animation/CapeSimulaton/src/cloth/cloth.hpp
+ /Users/patricktourniaire/Public/Polytechnique/inf585-computer_animation/CapeSimulaton/src/constraint/constraint.hpp
  /Users/patricktourniaire/Public/Polytechnique/inf585-computer_animation/CapeSimulaton/src/animated_character/animated_character.hpp
  /Users/patricktourniaire/Public/Polytechnique/inf585-computer_animation/CapeSimulaton/src/effects/effects.hpp
  /Users/patricktourniaire/Public/Polytechnique/inf585-computer_animation/CapeSimulaton/src/environment.hpp
  /Users/patricktourniaire/Public/Polytechnique/inf585-computer_animation/CapeSimulaton/src/scene.hpp
+ /Users/patricktourniaire/Public/Polytechnique/inf585-computer_animation/CapeSimulaton/src/cloth/cloth.hpp
+ /Users/patricktourniaire/Public/Polytechnique/inf585-computer_animation/CapeSimulaton/src/constraint/constraint.hpp
+ /Users/patricktourniaire/Public/Polytechnique/inf585-computer_animation/CapeSimulaton/src/simulation/simulation.hpp
  /usr/local/Cellar/glfw/3.3.9/include/GLFW/glfw3.h
 
 CMakeFiles/CapeSimulaton.dir/src/scene.cpp.o
@@ -28790,9 +28795,14 @@ CMakeFiles/CapeSimulaton.dir/src/scene.cpp.o
  /Users/patricktourniaire/Public/Polytechnique/inf585-computer_animation/CapeSimulaton/src/character_loader/character_loader.hpp
  /Users/patricktourniaire/Public/Polytechnique/inf585-computer_animation/CapeSimulaton/src/environment.hpp
  /Users/patricktourniaire/Public/Polytechnique/inf585-computer_animation/CapeSimulaton/src/cloth/cloth.hpp
+ /Users/patricktourniaire/Public/Polytechnique/inf585-computer_animation/CapeSimulaton/src/cloth/cloth.hpp
+ /Users/patricktourniaire/Public/Polytechnique/inf585-computer_animation/CapeSimulaton/src/constraint/constraint.hpp
  /Users/patricktourniaire/Public/Polytechnique/inf585-computer_animation/CapeSimulaton/src/animated_character/animated_character.hpp
  /Users/patricktourniaire/Public/Polytechnique/inf585-computer_animation/CapeSimulaton/src/effects/effects.hpp
  /Users/patricktourniaire/Public/Polytechnique/inf585-computer_animation/CapeSimulaton/src/environment.hpp
  /Users/patricktourniaire/Public/Polytechnique/inf585-computer_animation/CapeSimulaton/src/scene.hpp
+ /Users/patricktourniaire/Public/Polytechnique/inf585-computer_animation/CapeSimulaton/src/cloth/cloth.hpp
+ /Users/patricktourniaire/Public/Polytechnique/inf585-computer_animation/CapeSimulaton/src/constraint/constraint.hpp
+ /Users/patricktourniaire/Public/Polytechnique/inf585-computer_animation/CapeSimulaton/src/simulation/simulation.hpp
  /usr/local/Cellar/glfw/3.3.9/include/GLFW/glfw3.h
 

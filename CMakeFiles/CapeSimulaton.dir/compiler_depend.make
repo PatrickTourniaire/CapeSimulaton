@@ -28249,10 +28249,15 @@ CMakeFiles/CapeSimulaton.dir/src/main.cpp.o: src/main.cpp \
   src/animated_character/skeleton_structure/skeleton_structure.hpp \
   src/environment.hpp \
   src/cloth/cloth.hpp \
+  src/cloth/cloth.hpp \
+  src/constraint/constraint.hpp \
   src/animated_character/animated_character.hpp \
   src/effects/effects.hpp \
   src/environment.hpp \
   src/scene.hpp \
+  src/cloth/cloth.hpp \
+  src/constraint/constraint.hpp \
+  src/simulation/simulation.hpp \
   /usr/local/Cellar/glfw/3.3.9/include/GLFW/glfw3.h
 
 CMakeFiles/CapeSimulaton.dir/src/scene.cpp.o: src/scene.cpp \
@@ -28679,14 +28684,21 @@ CMakeFiles/CapeSimulaton.dir/src/scene.cpp.o: src/scene.cpp \
   src/character_loader/character_loader.hpp \
   src/environment.hpp \
   src/cloth/cloth.hpp \
+  src/cloth/cloth.hpp \
+  src/constraint/constraint.hpp \
   src/animated_character/animated_character.hpp \
   src/effects/effects.hpp \
   src/environment.hpp \
   src/scene.hpp \
+  src/cloth/cloth.hpp \
+  src/constraint/constraint.hpp \
+  src/simulation/simulation.hpp \
   /usr/local/Cellar/glfw/3.3.9/include/GLFW/glfw3.h
 
 
 src/scene.cpp:
+
+src/simulation/simulation.hpp:
 
 src/scene.hpp:
 
@@ -29221,6 +29233,8 @@ cgp/library/cgp/21_scene_project_helper/scene_project_helper.hpp:
 /Library/Developer/CommandLineTools/SDKs/MacOSX11.3.sdk/usr/include/setjmp.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX11.3.sdk/usr/include/sys/_types/_wchar_t.h:
+
+src/constraint/constraint.hpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX11.3.sdk/usr/include/sys/_types/_u_int32_t.h:
 
