@@ -273,6 +273,20 @@ void scene_structure::display_gui()
 		ImGui::Unindent();
 		
 	}
+
+	ImGui::Spacing(); ImGui::Spacing();
+
+	ImGui::Text("Simulation parameters");
+	ImGui::SliderFloat("Time step", &parameters.dt, 0.0001f, 0.02f, "%.4f", 2.0f);
+	ImGui::SliderFloat("Stiffness", &parameters.K, 0.2f, 50.0f, "%.3f", 2.0f);
+	ImGui::SliderFloat("Wind magnitude", &parameters.wind.magnitude, 0, 60, "%.3f", 2.0f);
+	ImGui::SliderFloat("Damping", &parameters.mu, 1.0f, 30.0f);
+	ImGui::SliderFloat("Mass", &parameters.mass_total, 0.2f, 5.0f, "%.3f", 2.0f);
+
+	ImGui::Spacing(); ImGui::Spacing();
+
+	ImGui::SliderInt("Cloth samples", &gui.N_sample_edge, 4, 80);
+
 }
 
 void scene_structure::mouse_move_event()

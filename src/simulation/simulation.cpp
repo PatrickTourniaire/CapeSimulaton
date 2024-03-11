@@ -2,7 +2,17 @@
 
 using namespace cgp;
 
+#ifdef SOLUTION
+static vec3 spring_force(const vec3& p_i, const vec3& p_j, float L0, float K)
+{
+    vec3 const p = p_i - p_j;
+    float const L = norm(p);
+    vec3 const u = p / L;
 
+    vec3 const F = -K * (L - L0) * u;
+    return F;
+}
+#endif
 
 
 // Fill value of force applied on each particle
@@ -33,9 +43,75 @@ void simulation_compute_force(cloth_structure& cloth, simulation_parameters cons
     float const mu = parameters.mu;            // damping/friction coefficient
     float const	L0 = 1.0f / (N - 1.0f);        // rest length between two direct neighboring particle
 
+#ifdef SOLUTION
+//#define N_neighbor 4
+//    static const int offset_u[N_neighbor] = { -1,1,0,0 };
+//    static const int offset_v[N_neighbor] = { 0,0,-1,1 };
+//    static const float alpha[N_neighbor] = { 1,1,1,1 };
+
+//#define N_neighbor 8
+//    static const int offset_u[N_neighbor] = { -1,1,0,0, -1,-1,1,1 };
+//    static const int offset_v[N_neighbor] = { 0,0,-1,1, -1,1,-1,1 };
+//    static const float alpha[N_neighbor] = { 1,1,1,1, sqrtf(2),sqrtf(2),sqrtf(2),sqrtf(2) };
+
+//#define N_neighbor 12
+//    static const int offset_u[N_neighbor] = { -1,1,0,0, -1,-1,1,1, 2,-2,0,0 };
+//    static const int offset_v[N_neighbor] = { 0,0,-1,1, -1,1,-1,1, 0,0,2,-2 };
+//    static const float alpha[N_neighbor] = { 1,1,1,1, sqrtf(2),sqrtf(2),sqrtf(2),sqrtf(2), 2,2,2,2 };
+
+#define N_neighbor 24
+    static const int offset_u[24] = { 2,2,2,2,2, 1,1,1,1,1, 0,0,0,0, -1,-1,-1,-1,-1, -2,-2,-2,-2,-2 };
+    static const int offset_v[24] = { 2,1,0,-1,-2, 2,1,0,-1,-2, 2,1,-1,-2, 2,1,0,-1,-2, 2,1,0,-1,-2 };
+    static const float alpha[24] = { sqrtf(8.0f), sqrtf(5),2,sqrtf(5),sqrtf(8), sqrtf(5),sqrtf(2),1,sqrtf(2),sqrtf(5), 2,1,1,2, sqrtf(5),sqrtf(2),1,sqrtf(2),sqrtf(5), sqrtf(8),sqrtf(5),2,sqrtf(5),sqrtf(8) };
+
+    const vec3 g = { 0,-9.81f,0 };
+
+// Use #prgam omp parallel for - for parallel loops
+#pragma omp parallel for
+    for (int k = 0; k < N_total; ++k)
+    {
+        vec3& f = force.at(k);
+        vec3 const& n = cloth.normal.at(k);
+
+        // gravity
+        f = m * g; 
+
+        // damping
+        f += -mu * m * velocity.at(k);
+
+        //wind
+        float const coeff = dot(parameters.wind.direction, n);
+        f += parameters.wind.magnitude * coeff * n * L0 * L0;
+    }
+
+    // Spring
+#pragma omp parallel for
+    for (int kv = 0; kv < N; ++kv){
+        for (int ku = 0; ku < N; ++ku){
+            int const offset = ku + N * kv;
+
+            vec3& f = force.at(offset);
+            vec3 const& p = position.at(offset);
+
+            for (int kn = 0; kn < N_neighbor; ++kn) {
+                int const ku_n = ku + offset_u[kn];
+                int const kv_n = kv + offset_v[kn];
+                if (ku_n >= 0 && ku_n < N && kv_n >= 0 && kv_n < N)
+                {
+                    float const a = alpha[kn];
+                    int const offset_neighbor = ku_n + N * kv_n;
+                    vec3 const& pn = position.at(offset_neighbor);
+
+                    f += spring_force(p, pn, a * L0, K / a);
+                }
+            }
+        }
+    }
+
+#else
 
     // Gravity
-    const vec3 g = { 0,-9.81f,0 };
+    const vec3 g = { 0,0,-9.81f };
     for (int ku = 0; ku < N; ++ku)
         for (int kv = 0; kv < N; ++kv)
             force(ku, kv) = m * g;
@@ -58,28 +134,10 @@ void simulation_compute_force(cloth_structure& cloth, simulation_parameters cons
             //   - You may want to loop over all the neighbors of a vertex to add each contributing force to this vertex
             //   - To void repetitions and limit the need of debuging, it may be a good idea to define a generic function that computes the spring force between two positions given the parameters K and L0
             //   - If the simulation is a bit too slow, you can speed it up in adapting the parameter N_step in scene.cpp that loops over several simulation step between two displays.
-
-            // F = -K (||p_i, p_j|| - L_0) (p_i - p_j) / ||p_i, p_j||
-
-            std::vector<std::vector<int>> neighbours = {
-                {ku+1, kv}, {ku-1, kv},
-                {ku, kv+1}, {ku, kv-1}
-            };
-
-            for (int i = 0; i < neighbours.size(); i ++) {
-                int nu = neighbours[i][0];
-                int nv = neighbours[i][1];
-
-                if (nu >= 0 && nv >= 0 && nu < N &&  nv < N) {
-                    vec3 diff = position(ku, kv) - position(nu, nv);
-                    float dist = norm(diff);
-                    force(ku, kv) += - K * (dist - L0) * diff / dist;
-                }
-            }
-            force(ku, kv) += normal(ku, kv) * dot(normal(ku, kv), parameters.wind.direction) * parameters.wind.magnitude;
         }
     }
 
+#endif
 }
 
 void simulation_numerical_integration(cloth_structure& cloth, simulation_parameters const& parameters, float dt)
