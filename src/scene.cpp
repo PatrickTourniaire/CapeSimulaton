@@ -104,6 +104,43 @@ void scene_structure::display_frame()
   constraint.add_fixed_position(0, 0, joint_frames[17].get_block_translation());
   constraint.add_fixed_position(0, gui.N_sample_edge - 1, joint_frames[16].get_block_translation());
   
+  /*
+   *Joint at index (0) with name: mixamorig_Hips
+    Joint at index (1) with name: mixamorig_Spine
+  Joint at index (2) with name: mixamorig_LeftUpLeg
+  Joint at index (3) with name: mixamorig_RightUpLeg
+   Joint at index (4) with name: mixamorig_Spine1
+  Joint at index (5) with name: mixamorig_LeftLeg
+  Joint at index (6) with name: mixamorig_RightLeg
+  Joint at index (7) with name: mixamorig_Spine2
+  Joint at index (8) with name: mixamorig_LeftFoot
+  Joint at index (9) with name: mixamorig_RightFoot
+  Joint at index (10) with name: mixamorig_Neck
+  Joint at index (11) with name: mixamorig_LeftShoulder
+  Joint at index (12) with name: mixamorig_RightShoulder
+  Joint at index (13) with name: mixamorig_LeftToeBase
+  Joint at index (14) with name: mixamorig_RightToeBase
+  Joint at index (15) with name: mixamorig_Head
+  Joint at index (16) with name: mixamorig_LeftArm
+  Joint at index (17) with name: mixamorig_RightArm
+  Joint at index (18) with name: mixamorig_LeftToe_End
+  Joint at index (19) with name: mixamorig_RightToe_End
+  Joint at index (20) with name: mixamorig_HeadTop_End
+  Joint at index (21) with name: mixamorig_LeftEye
+  Joint at index (22) with name: mixamorig_RightEye
+  Joint at index (23) with name: mixamorig_LeftForeArm
+  Joint at index (24) with name: mixamorig_RightForeArm
+  Joint at index (25) with name: mixamorig_LeftHand
+  Joint at index (26) with name: mixamorig_RightHan
+  */
+  /*
+   * circle with center at mixamorig_Hips
+   * cylinder from mixamorig_LeftUpLeg to mixamorig_LeftLeg
+   * -"- for right mixamorig_RightLeg
+   *  large cylinder for spine to spine 2
+   *  cylinder for shoulder left to shoulder right
+   *  Smaller cylinders for the arms and fore arms.
+   */
   for (int i = 0; i < ch.animated_model.skeleton.joint_name.size(); i++) {
     std::cout << "Joint at index (" << i << ") with name: " << ch.animated_model.skeleton.joint_name[i] << std::endl;
   }
