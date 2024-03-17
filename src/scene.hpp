@@ -9,6 +9,7 @@
 #include "cloth/cloth.hpp"
 #include "constraint/constraint.hpp"
 #include "simulation/simulation.hpp"
+#include <vector>
 
 using cgp::mesh_drawable;
 
@@ -36,6 +37,7 @@ struct scene_structure : cgp::scene_inputs_generic {
 	cloth_structure_drawable cloth_drawable;   // Helper structure to display the cloth as a mesh
   constraint_structure constraint;
 
+  std::vector<cgp::mesh_drawable> obstacle_spheres;
 	// ****************************** //
 	// Elements and shapes of the scene
 	// ****************************** //

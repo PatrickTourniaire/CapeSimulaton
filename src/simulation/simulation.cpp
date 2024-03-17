@@ -162,28 +162,52 @@ void simulation_numerical_integration(cloth_structure& cloth, simulation_paramet
 
 void simulation_apply_constraints(cloth_structure& cloth, constraint_structure const& constraint)
 {
+
     // Fixed positions of the cloth
     for (auto const& it : constraint.fixed_sample) {
         position_contraint c = it.second;
         cloth.position(c.ku, c.kv) = c.position; // set the position to the fixed one
     }
 
+#ifdef SOLUTION
+    const int N = cloth.position.size();
+    const float epsilon = 1e-2f;
+#pragma omp parallel for
+    for (int k = 0; k < N; ++k)
+    {
+        vec3& p = cloth.position.data.at_unsafe(k);
+        vec3& v = cloth.velocity.data.at_unsafe(k);
+
+        // Ground constraint
+        //{
+        //    if (p.z <= constraint.ground_z + epsilon)
+        //    {
+        //        p.z = constraint.ground_z + epsilon;
+        //        v.z = 0.0f;
+        //    }
+        //}
+
+        // Sphere constraint
+        {
+          for (sphere_parameter sphere : constraint.spherical_constraints) {
+            vec3 const& p0 = sphere.center;
+            float const r = sphere.radius;
+            if (norm(p - p0) < (r + epsilon))
+            {
+                const vec3 u = normalize(p - p0);
+                p = (r + epsilon) * u + p0;
+                v = v - dot(v, u) * u;
+            }
+          }
+        }
+    }
+
+#else
     // To do: apply external constraints
     // For all vertex:
     //   If vertex is below floor level ...
     //   If vertex is inside collision sphere ...
-    size_t const N = cloth.N_samples();                 // number of vertices in one dimension of the grid
-    grid_2D<vec3> const& position = cloth.position;
-
-    //for (int ku = 0; ku < N; ++ku) {
-    //    for (int kv = 0; kv < N; ++kv) {
-    //        if (position(ku, kv).z < constraint.ground_z + 0.001) {
-    //            cloth.position(ku, kv).z = constraint.ground_z + 0.001;
-    //        }
-    //    }
-    //}
-
-    
+#endif
 }
 
 

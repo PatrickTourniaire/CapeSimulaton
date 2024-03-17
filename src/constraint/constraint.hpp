@@ -16,13 +16,21 @@ struct position_contraint {
 	cgp::vec3 position;
 };
 
+// Used for cylindrical approximations of bone segments
+struct cylinder_parameter {
+  int jointStart;
+  int jointEnd;
+  float radius;
+};
+
 
 struct constraint_structure
 {
-	float ground_z = 0.0f;                                   // Height of the flood
-	sphere_parameter sphere = { {0.1f, 0.5f, 0.0f}, 0.15f }; // Colliding sphere
-	
+	float ground_z = 0.0f;    // Height of the flood
+
 	std::map<size_t, position_contraint> fixed_sample; // Storage of all fixed position of the cloth
+
+  std::vector<sphere_parameter> spherical_constraints;
 
 	// Add a new fixed position
 	void add_fixed_position(int ku, int kv, vec3 const& position);

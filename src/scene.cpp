@@ -1,6 +1,8 @@
 #include "scene.hpp"
 
+#include "cgp/16_drawable/mesh_drawable/mesh_drawable.hpp"
 #include "character_loader/character_loader.hpp"
+#include "constraint/constraint.hpp"
 
 
 using namespace cgp;
@@ -33,6 +35,8 @@ void scene_structure::initialize()
   // Load the texture for the cape
 	cloth_texture.load_and_initialize_texture_2d_on_gpu(project::path + "assets/cloth.jpg");
 	initialize_cloth(gui.N_sample_edge);
+
+  
 }
 
 void scene_structure::display_frame()
@@ -45,6 +49,9 @@ void scene_structure::display_frame()
 
 	if(gui.display_ground) 
 		draw(ground, environment);
+  
+
+  
 
 	// Update the local time for each character
 	for(auto& entry: characters) {
@@ -103,7 +110,30 @@ void scene_structure::display_frame()
   constraint.fixed_sample.clear();
   constraint.add_fixed_position(0, 0, joint_frames[17].get_block_translation());
   constraint.add_fixed_position(0, gui.N_sample_edge - 1, joint_frames[16].get_block_translation());
+  sphere_parameter sphere_hip = {joint_frames[0].get_block_translation(), 0.20f};
   
+  if (constraint.spherical_constraints.empty()) {
+    constraint.spherical_constraints.push_back(sphere_hip);
+  }
+  else {
+    constraint.spherical_constraints[0] = sphere_hip;
+  }
+
+  numarray<int> joint_spheres = {11, 12, 23, 24, 2, 3, 5, 6};
+  float minor_joint_radius = 0.10f; 
+
+  for (int i = 0; i < joint_spheres.size(); i++) {
+    vec3 joint_position = joint_frames[joint_spheres[i]].get_block_translation();
+
+    if (i > constraint.spherical_constraints.size() + 1) {
+      constraint.spherical_constraints.push_back({joint_position, minor_joint_radius}); 
+      continue;
+    }
+
+    constraint.spherical_constraints[i+1] = {joint_position, minor_joint_radius};
+  }
+
+
   /*
    *Joint at index (0) with name: mixamorig_Hips
     Joint at index (1) with name: mixamorig_Spine
@@ -141,8 +171,30 @@ void scene_structure::display_frame()
    *  cylinder for shoulder left to shoulder right
    *  Smaller cylinders for the arms and fore arms.
    */
-  for (int i = 0; i < ch.animated_model.skeleton.joint_name.size(); i++) {
-    std::cout << "Joint at index (" << i << ") with name: " << ch.animated_model.skeleton.joint_name[i] << std::endl;
+  // for (int i = 0; i < ch.animated_model.skeleton.joint_name.size(); i++) {
+  //  std::cout << "Joint at index (" << i << ") with name: " << ch.animated_model.skeleton.joint_name[i] << std::endl;
+  //}
+  for (int i = 0; i < constraint.spherical_constraints.size(); i ++) {
+    if (constraint.spherical_constraints.size() != obstacle_spheres.size()) {
+      cgp::mesh_drawable obstacle_sphere;
+
+      obstacle_sphere.initialize_data_on_gpu(mesh_primitive_sphere());
+	    obstacle_sphere.model.translation = constraint.spherical_constraints[i].center;
+	    obstacle_sphere.model.scaling = constraint.spherical_constraints[i].radius;
+	    obstacle_sphere.material.color = { 1,0,0 };
+     
+      obstacle_spheres.push_back(obstacle_sphere);
+    }
+  }
+
+  std::cout << "We have this many spheres: " << constraint.spherical_constraints.size() << std::endl;
+  std::cout << "We have this many obstacles to render: " << obstacle_spheres.size() << std::endl << std::endl;
+  for (int i = 0; i < obstacle_spheres.size(); i++) {
+    obstacle_spheres[i].model.translation = constraint.spherical_constraints[i].center;
+  }
+
+  for (mesh_drawable sphere : obstacle_spheres) {
+    draw(sphere, environment);
   }
 
 	// Simulation of the cloth
@@ -211,9 +263,6 @@ void scene_structure::display_frame()
 			character.sk_drawable.display_segments = gui.display_skeleton_bone;
 			draw(character.sk_drawable, environment);
 		}
-    
-    // Draw cloth
-    draw(cloth_drawable, environment);
 	}
 
 }

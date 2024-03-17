@@ -18,7 +18,7 @@ void cloth_structure::initialize(int N_samples_edge_arg)
     force.resize(N_samples_edge_arg, N_samples_edge_arg);
     
 
-    float const z0 = 1.0f;
+    float const z0 = -0.5f;
     mesh const cloth_mesh = mesh_primitive_grid({ -0.5f,0,z0 }, { 0.5f,0,z0 }, { 0.5f,1,z0 }, { -0.5f,1,z0 }, N_samples_edge_arg, N_samples_edge_arg);
     position = grid_2D<vec3>::from_buffer(cloth_mesh.position, N_samples_edge_arg, N_samples_edge_arg);
     normal = grid_2D<vec3>::from_buffer(cloth_mesh.normal, N_samples_edge_arg, N_samples_edge_arg);
@@ -39,7 +39,7 @@ int cloth_structure::N_samples() const
 
 void cloth_structure_drawable::initialize(int N_samples_edge)
 {
-    mesh const cloth_mesh = mesh_primitive_grid({ 0,0,0 }, {1,0,0 }, { 1,1,0 }, { 0,1,0 }, N_samples_edge, N_samples_edge);
+    mesh const cloth_mesh = mesh_primitive_grid({ 0.5,0,0 }, {1,0,0 }, { 1,1,0 }, { 0,1,0 }, N_samples_edge, N_samples_edge);
 
     drawable.clear();
     drawable.initialize_data_on_gpu(cloth_mesh);
