@@ -36,7 +36,8 @@ struct scene_structure : cgp::scene_inputs_generic {
   cloth_structure cloth;                     // The values of the position, velocity, forces, etc, stored as a 2D grid
 	cloth_structure_drawable cloth_drawable;   // Helper structure to display the cloth as a mesh
   constraint_structure constraint;
-
+  
+  std::vector<cgp::mesh_drawable> obstacle_cylinders;
   std::vector<cgp::mesh_drawable> obstacle_spheres;
 	// ****************************** //
 	// Elements and shapes of the scene

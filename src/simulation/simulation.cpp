@@ -1,4 +1,5 @@
 #include "simulation.hpp"
+#include "constraint/constraint.hpp"
 
 using namespace cgp;
 
@@ -197,6 +198,38 @@ void simulation_apply_constraints(cloth_structure& cloth, constraint_structure c
                 const vec3 u = normalize(p - p0);
                 p = (r + epsilon) * u + p0;
                 v = v - dot(v, u) * u;
+            }
+          }
+        }
+
+        // Cylinder constraints
+        {
+          for (cylinder_parameter cylinder : constraint.cylindrical_constraints) {
+            vec3 const& p0 = cylinder.positionStart;
+            vec3 const& p1 = cylinder.positionEnd;
+            float const r = cylinder.radius;
+
+            vec3 const p0_to_cape = p - p0;
+            vec3 const p1_to_cape = p - p1;
+            vec3 const p01 = p1 - p0;
+            vec3 const p10 = -1.0 * p01;
+
+            float const d = norm(p01);
+
+            vec3 const p0cape_proj = (dot(p0_to_cape, p01) / dot(p01, p01)) * p01;
+            vec3 const p1cape_proj = (dot(p1_to_cape, p10) / dot(p10, p10)) * p10;
+            
+
+            if (norm(p0cape_proj) > d || norm(p1cape_proj) > d) {
+              continue;
+            }
+
+            vec3 const norm_proj = p0_to_cape - p0cape_proj;
+            
+            if (norm(norm_proj) < (r + epsilon)) {
+              const vec3 u = normalize(norm_proj);
+              p = (r + epsilon) * u + (p0cape_proj + p0);
+              v = v - dot(v, u) * u;
             }
           }
         }

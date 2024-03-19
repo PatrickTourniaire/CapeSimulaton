@@ -1,5 +1,7 @@
 #include "scene.hpp"
 
+#include "cgp/02_numarray/numarray/numarray.hpp"
+#include "cgp/02_numarray/numarray_stack/special_types/special_types.hpp"
 #include "cgp/16_drawable/mesh_drawable/mesh_drawable.hpp"
 #include "character_loader/character_loader.hpp"
 #include "constraint/constraint.hpp"
@@ -109,28 +111,50 @@ void scene_structure::display_frame()
   cgp::numarray<mat4> joint_frames = ch.animated_model.skeleton.joint_matrix_global;
   constraint.fixed_sample.clear();
   constraint.add_fixed_position(0, 0, joint_frames[17].get_block_translation());
+  //constraint.add_fixed_position(0, (int) (gui.N_sample_edge/2), joint_frames[10].get_block_translation());
   constraint.add_fixed_position(0, gui.N_sample_edge - 1, joint_frames[16].get_block_translation());
-  sphere_parameter sphere_hip = {joint_frames[0].get_block_translation(), 0.20f};
   
-  if (constraint.spherical_constraints.empty()) {
-    constraint.spherical_constraints.push_back(sphere_hip);
-  }
-  else {
-    constraint.spherical_constraints[0] = sphere_hip;
-  }
 
-  numarray<int> joint_spheres = {11, 12, 23, 24, 2, 3, 5, 6};
-  float minor_joint_radius = 0.10f; 
+  numarray<int> joint_spheres = {0, 11, 12, 23, 24, 2, 3, 5, 6};
+  numarray<float> joint_radiuses = {0.20, 0.05, 0.05, 0.05, 0.05, 0.15, 0.15, 0.10, 0.10};
 
   for (int i = 0; i < joint_spheres.size(); i++) {
     vec3 joint_position = joint_frames[joint_spheres[i]].get_block_translation();
+    float radius = joint_radiuses[i];
 
-    if (i > constraint.spherical_constraints.size() + 1) {
-      constraint.spherical_constraints.push_back({joint_position, minor_joint_radius}); 
+    if (i >= constraint.spherical_constraints.size()) {
+      constraint.spherical_constraints.push_back({joint_position, radius}); 
       continue;
     }
 
-    constraint.spherical_constraints[i+1] = {joint_position, minor_joint_radius};
+    constraint.spherical_constraints[i] = {joint_position, radius};
+  }
+
+
+  numarray<numarray<int>> cylinder_connections = {
+    {11, 23},
+    {12, 24},
+    {2, 5},
+    {3, 6},
+  };
+  numarray<float> cylinder_radiuses = {
+    0.08,
+    0.08,
+    0.10,
+    0.10,
+  };
+
+  for (int i = 0; i < cylinder_connections.size(); i++) {
+    vec3 start = joint_frames[cylinder_connections[i][0]].get_block_translation();
+    vec3 end = joint_frames[cylinder_connections[i][1]].get_block_translation();
+    float radius = cylinder_radiuses[i];
+
+    if (i >= constraint.cylindrical_constraints.size()) {
+      constraint.cylindrical_constraints.push_back({start, end, radius}); 
+      continue;
+    }
+    
+    constraint.cylindrical_constraints[i] = {start, end, radius};
   }
 
 
@@ -174,8 +198,9 @@ void scene_structure::display_frame()
   // for (int i = 0; i < ch.animated_model.skeleton.joint_name.size(); i++) {
   //  std::cout << "Joint at index (" << i << ") with name: " << ch.animated_model.skeleton.joint_name[i] << std::endl;
   //}
-  for (int i = 0; i < constraint.spherical_constraints.size(); i ++) {
-    if (constraint.spherical_constraints.size() != obstacle_spheres.size()) {
+
+  if (constraint.spherical_constraints.size() != obstacle_spheres.size()) {
+    for (int i = 0; i < constraint.spherical_constraints.size(); i ++) {
       cgp::mesh_drawable obstacle_sphere;
 
       obstacle_sphere.initialize_data_on_gpu(mesh_primitive_sphere());
@@ -187,17 +212,34 @@ void scene_structure::display_frame()
     }
   }
 
-  std::cout << "We have this many spheres: " << constraint.spherical_constraints.size() << std::endl;
-  std::cout << "We have this many obstacles to render: " << obstacle_spheres.size() << std::endl << std::endl;
+  // Draw cylindrical constraints
+  if (obstacle_cylinders.empty()) {
+    for (const auto& cylinder_constraint : constraint.cylindrical_constraints) {
+        vec3 start = cylinder_constraint.positionStart;
+        vec3 end = cylinder_constraint.positionEnd;
+        float radius = cylinder_constraint.radius;
+
+        // Create cylinder mesh_drawable
+        mesh_drawable cylinder_mesh;
+        cylinder_mesh.initialize_data_on_gpu(cgp::mesh_primitive_cylinder(radius, start, end));
+        cylinder_mesh.material.color = {0, 1, 0}; // Set color to green
+
+        obstacle_cylinders.push_back(cylinder_mesh);
+    }
+  }
+  
+  // Update sphere centers and draw
   for (int i = 0; i < obstacle_spheres.size(); i++) {
-    obstacle_spheres[i].model.translation = constraint.spherical_constraints[i].center;
+    obstacle_spheres[i].model.translation = constraint.spherical_constraints[i].center; 
+    draw(obstacle_spheres[i], environment);
   }
 
-  for (mesh_drawable sphere : obstacle_spheres) {
-    draw(sphere, environment);
-  }
+  // Update cylinder centers and draw
+  //for (int i = 0; i < obstacle_cylinders.size(); i++) {
+  //  draw(obstacle_cylinders[i], environment); 
+  //}
 
-	// Simulation of the cloth
+  // Simulation of the cloth
 	// ***************************************** //
 	int const N_step = 1; // Adapt here the number of intermediate simulation steps (ex. 5 intermediate steps per frame)
 	for (int k_step = 0; k_step < N_step; ++k_step)
