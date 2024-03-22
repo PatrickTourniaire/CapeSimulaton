@@ -2,6 +2,7 @@
 
 #include "cgp/02_numarray/numarray/numarray.hpp"
 #include "cgp/02_numarray/numarray_stack/special_types/special_types.hpp"
+#include "cgp/09_geometric_transformation/rotation_transform/rotation_transform.hpp"
 #include "cgp/16_drawable/mesh_drawable/mesh_drawable.hpp"
 #include "character_loader/character_loader.hpp"
 #include "constraint/constraint.hpp"
@@ -110,13 +111,40 @@ void scene_structure::display_frame()
   */
   cgp::numarray<mat4> joint_frames = ch.animated_model.skeleton.joint_matrix_global;
   constraint.fixed_sample.clear();
-  constraint.add_fixed_position(0, 0, joint_frames[17].get_block_translation());
-  //constraint.add_fixed_position(0, (int) (gui.N_sample_edge/2), joint_frames[10].get_block_translation());
-  constraint.add_fixed_position(0, gui.N_sample_edge - 1, joint_frames[16].get_block_translation());
-  
 
-  numarray<int> joint_spheres = {0, 11, 12, 23, 24, 2, 3, 5, 6};
-  numarray<float> joint_radiuses = {0.20, 0.05, 0.05, 0.05, 0.05, 0.15, 0.15, 0.10, 0.10};
+  const vec3& p_al = joint_frames[16].get_block_translation();
+  const vec3& p_sl = joint_frames[11].get_block_translation();
+  const vec3& p_l = 0.5f * (p_sl - p_al) + p_al;
+
+  const vec3& p_ar = joint_frames[17].get_block_translation();
+  const vec3& p_sr = joint_frames[12].get_block_translation();
+  const vec3& p_r = 0.5f * (p_sr - p_ar) + p_ar;
+
+  constraint.add_fixed_position(0, 0, p_al); 
+  constraint.add_fixed_position(0, (int) (gui.N_sample_edge/4), p_l);
+
+  constraint.add_fixed_position(0, gui.N_sample_edge - 1, p_ar); 
+  constraint.add_fixed_position(0, gui.N_sample_edge - 1 - (int) (gui.N_sample_edge/4), p_r);  
+
+  numarray<int> joint_spheres = {
+    0, // Hips
+    23, // Left elbow
+    24, // Right elbow
+    2, // Left hip
+    3, // Right hip
+    5, // Left knee
+    6 // Right knee
+  };
+
+  numarray<float> joint_radiuses = {
+    0.20, // Hips
+    0.05, // Left elbow
+    0.05, // Right elbow
+    0.15, // Left hip
+    0.15, //Right hip
+    0.10, // Left knee
+    0.10 // Right knee
+  };
 
   for (int i = 0; i < joint_spheres.size(); i++) {
     vec3 joint_position = joint_frames[joint_spheres[i]].get_block_translation();
@@ -132,16 +160,26 @@ void scene_structure::display_frame()
 
 
   numarray<numarray<int>> cylinder_connections = {
-    {11, 23},
-    {12, 24},
-    {2, 5},
-    {3, 6},
+    {11, 23}, // Left arm upper
+    {12, 24}, // Right arm upper
+    {2, 5}, // Left leg upper
+    {3, 6}, // Right leg upper
+    {5, 8}, // Left leg lower
+    {6, 9}, // Right leg lower
+    {23, 25}, // Left arm lower
+    {24, 26}, // Right arm lower
+    {0, 7} // Body
   };
   numarray<float> cylinder_radiuses = {
-    0.08,
-    0.08,
-    0.10,
-    0.10,
+    0.08, // Left arm upper
+    0.08, // Right arm upper
+    0.12, // Left leg upper
+    0.12, // Right leg upper
+    0.11, // Left leg lower
+    0.11, // Right leg lower
+    0.08, // Left arm lower 
+    0.08, // Right arm lower
+    0.11 // Body 
   };
 
   for (int i = 0; i < cylinder_connections.size(); i++) {
@@ -235,11 +273,20 @@ void scene_structure::display_frame()
   }
 
   // Update cylinder centers and draw
-  //for (int i = 0; i < obstacle_cylinders.size(); i++) {
-  //  draw(obstacle_cylinders[i], environment); 
-  //}
+  for (int i = 0; i < obstacle_cylinders.size(); i++) {
+    vec3 start = constraint.cylindrical_constraints[i].positionStart;
+    vec3 end = constraint.cylindrical_constraints[i].positionEnd;
+    float radius = constraint.cylindrical_constraints[i].radius;
 
-  // Simulation of the cloth
+    // Create cylinder mesh_drawable
+    mesh_drawable cylinder_mesh = obstacle_cylinders[i];
+    cylinder_mesh.clear();
+    cylinder_mesh.initialize_data_on_gpu(cgp::mesh_primitive_cylinder(radius, start, end));
+    cylinder_mesh.material.color = {0, 1, 0}; // Set color to green
+    
+    draw(cylinder_mesh, environment);
+  }
+
 	// ***************************************** //
 	int const N_step = 1; // Adapt here the number of intermediate simulation steps (ex. 5 intermediate steps per frame)
 	for (int k_step = 0; k_step < N_step; ++k_step)

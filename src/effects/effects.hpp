@@ -40,3 +40,4 @@ void effect_walking(effect_walking_structure& effect_walking, character_structur
 // Change of animation when we press or release the UP key during a walk effect
 void effect_walking_keyboard_event(effect_transition_structure& effect_transition, character_structure& character, cgp::input_devices const& inputs, effect_walking_structure const& effect_walking);
 
+cgp::mat4 mat4_interpolate_quaternion(cgp::mat4 const& M1, cgp::mat4 const& M2, float t);
