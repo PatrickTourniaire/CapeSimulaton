@@ -138,12 +138,12 @@ void scene_structure::display_frame()
 
   numarray<float> joint_radiuses = {
     0.20, // Hips
-    0.05, // Left elbow
-    0.05, // Right elbow
+    0.08, // Left elbow
+    0.08, // Right elbow
     0.15, // Left hip
     0.15, //Right hip
-    0.10, // Left knee
-    0.10 // Right knee
+    0.12, // Left knee
+    0.12 // Right knee
   };
 
   for (int i = 0; i < joint_spheres.size(); i++) {
@@ -171,14 +171,14 @@ void scene_structure::display_frame()
     {0, 7} // Body
   };
   numarray<float> cylinder_radiuses = {
-    0.08, // Left arm upper
-    0.08, // Right arm upper
+    0.06, // Left arm upper
+    0.06, // Right arm upper
     0.12, // Left leg upper
     0.12, // Right leg upper
-    0.11, // Left leg lower
-    0.11, // Right leg lower
-    0.08, // Left arm lower 
-    0.08, // Right arm lower
+    0.10, // Left leg lower
+    0.10, // Right leg lower
+    0.06, // Left arm lower 
+    0.06, // Right arm lower
     0.11 // Body 
   };
 

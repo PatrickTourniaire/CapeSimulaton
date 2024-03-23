@@ -26,7 +26,7 @@ struct cylinder_parameter {
 
 struct constraint_structure
 {
-	float ground_z = 0.0f;    // Height of the flood
+	float ground_y = 0.0f;    // Height of the flood
 
 	std::map<size_t, position_contraint> fixed_sample; // Storage of all fixed position of the cloth
 

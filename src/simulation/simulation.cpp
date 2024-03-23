@@ -180,13 +180,12 @@ void simulation_apply_constraints(cloth_structure& cloth, constraint_structure c
         vec3& v = cloth.velocity.data.at_unsafe(k);
 
         // Ground constraint
-        //{
-        //    if (p.z <= constraint.ground_z + epsilon)
-        //    {
-        //        p.z = constraint.ground_z + epsilon;
-        //        v.z = 0.0f;
-        //    }
-        //}
+        {
+          if (p.y <= constraint.ground_y + epsilon) {
+            p.y = constraint.ground_y + epsilon;
+            v.y = 0.0f;
+          }
+        }
 
         // Sphere constraint
         {
